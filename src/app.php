@@ -13,5 +13,7 @@ require_once __DIR__.'/bootstrap.php';
 
 $app = new Silex\Application();
 
+$gym = new \VzlaGym\Gym();
+
 // definitions
 $app["debug"] = true;

@@ -1,6 +1,11 @@
 {
     "require": {
         "silex/silex": "~1.1",
-         "doctrine/orm": "2.4.*"
+        "doctrine/orm": "2.4.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "VzlaGym": "src/"
+        }
     }
 }
