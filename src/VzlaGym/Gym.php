@@ -10,8 +10,14 @@ namespace VzlaGym;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Silex\Provider\DoctrineServiceProvider;
 
+/**
+ * Class Gym
+ * @package VzlaGym
+ *
+ * Representa un gimnasio.
+ */
 class Gym
 {
     public $name = null;
@@ -30,52 +36,68 @@ class Gym
       )
     );
 
+    /**
+     * Obtiene todos los gimnasios registrados.
+     * @param Request $request
+     * @param Application $app
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
     public static function getAll(Request $request, Application $app)
     {
-        $data = array(
-            "pin_img" => "AAAadasfADF234Ds2234SDfasd3sfd3fd5534t",
-            "gyms" => array(
-                array(
-                    "name" => "Universal Gym",
-                    "state" => "Miranda",
-                    "city" => "Caracas",
-                    "address" => "CC. Los Campitos, piso 3, Los Campitos, Baruta.",
-                    "location" => array(
-                        "lat" => -64.123456,
-                        "lon" => 9.12346
-                    ),
-                ),
-                array(
-                    "name" => "Universal Gym",
-                    "state" => "Miranda",
-                    "city" => "Caracas",
-                    "address" => "CC. Los Campitos, piso 3, Los Campitos, Baruta.",
-                    "location" => array(
-                        "lat" => -64.123456,
-                        "lon" => 9.12346
-                    ),
-                )
-            )
+        $sql = "select * from gym";
+        $gyms = $app['db']->fetchAll($sql);
+
+        $sql = "select * from pin limit 1";
+        $pin = $app['db']->fetchColumn($sql, array(0), 1);
+
+        $result = array(
+            "pin_img" => $pin,
+            "gyms" => $gyms
         );
 
-        return $app->json($data);
+        return $app->json($result);
     }
 
+    /**
+     * Obtiene un gimnasio en especifico dado su
+     * identificador de base de datos.
+     *
+     * @param Request $request
+     * @param Application $app
+     * @param $id
+     */
     public function get(Request $request, Application $app, $id) {
+        $sql = "select * from gym where id=?";
+        $gym = $app['db']->fetchAssoc($sql, array($id));
 
+        $result = $gym;
+
+        return $app->json($result);
     }
 
+    /**
+     * Crea un nuevo gimnasio.
+     * @param Request $request
+     */
     public function post(Request $request)
     {
 
     }
 
-    public function put()
+    /**
+     * Modifica los datos de un gimnasio dado su identificador.
+     * @param $id
+     */
+    public function put($id)
     {
 
     }
 
-    public function delete()
+    /**
+     * Elimina un gimnasio dado su identificador.
+     * @param $id
+     */
+    public function delete($id)
     {
 
     }

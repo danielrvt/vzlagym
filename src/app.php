@@ -17,3 +17,13 @@ $gym = new \VzlaGym\Gym();
 
 // definitions
 $app["debug"] = true;
+
+$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
+    'db.options' => array(
+        'driver'   => 'pdo_mysql',
+        'dbname'     => 'vzlagym',
+        'host'     => '127.0.0.1',
+        'user'     => 'vzlagym',
+        'password'     => 'vzlagym',
+    ),
+));

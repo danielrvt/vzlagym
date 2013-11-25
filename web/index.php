@@ -24,5 +24,6 @@ $app->before(function (Request $request) {
 
 // routes
 $app->get("/gyms", 'VzlaGym\\Gym::getAll');
+$app->get("/gyms/{id}", 'VzlaGym\\Gym::get');
 
 $app->run();
