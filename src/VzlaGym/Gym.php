@@ -11,6 +11,7 @@ namespace VzlaGym;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Silex\Provider\DoctrineServiceProvider;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class Gym
@@ -25,16 +26,8 @@ class Gym
     public $city = null;
     public $address = null;
     public $logo = null;
-    public $location = array(
-        "lat" => null,
-        "lon" => null
-    );
-    public $scheduleOfAttention = array(
-      "" => array(
-          "openingTime" => null,
-          "closingTime" => null,
-      )
-    );
+    public $lat = null;
+    public $lon = null;
 
     /**
      * Obtiene todos los gimnasios registrados.
@@ -79,9 +72,35 @@ class Gym
      * Crea un nuevo gimnasio.
      * @param Request $request
      */
-    public function post(Request $request)
+    public function post(Request $request, Application $app)
     {
+        $gym = new Gym();
 
+        $gym->name = $request->request->get('name');
+        $gym->address = $request->request->get('address');
+        $gym->lat = $request->request->get('lat');
+        $gym->lon = $request->request->get('lon');
+        $gym->city = $request->request->get('city');
+        $gym->logo = $request->request->get('logo');
+
+        if ($gym->isValid()) {
+            try {
+                $app['db']->insert('gym', array(
+                    'name' => $gym->name,
+                    'address' => $gym->address,
+                    'lat' => $gym->lat,
+                    'lon' => $gym->lon,
+                    'city' => $gym->city,
+                    'logo' => $gym->logo
+                ));
+
+                return new Response("Ok", 200);
+
+            } catch (Exception $e) {
+               return new Response($e, 300);
+            }
+        }
+        return new Response("Not Valid", 300);
     }
 
     /**
@@ -100,5 +119,12 @@ class Gym
     public function delete($id)
     {
 
+    }
+
+    /**
+     * Valida el objeto
+     */
+    public function isValid() {
+        return true;
     }
 }
