@@ -37,14 +37,25 @@ class Gym
      */
     public static function getAll(Request $request, Application $app)
     {
-        $sql = "select * from gym";
-        $gyms = $app['db']->fetchAll($sql);
+        $queryBuilder = $app["db"]->createQueryBuilder();
+        $queryBuilder
+            ->select('g.id', 'g.name', 'g.address', 'g.lat', 'g.lon', 'g.logo', 'c.name as city')
+            ->from('gym', 'g')
+            ->join('g','cities', 'c', 'g.city=c.id');
 
-        $sql = "select * from pin limit 1";
-        $pin = $app['db']->fetchColumn($sql, array(0), 1);
+        $gyms = $queryBuilder->execute()->fetchAll();
+
+        $queryBuilder = $app["db"]->createQueryBuilder();
+        $queryBuilder
+            ->select('p.img')
+            ->from('pin', 'p')
+            ->orderBy('p.id', 'DESC')
+            ->setMaxResults(1);
+
+        $pin = $queryBuilder->execute()->fetch();
 
         $result = array(
-            "pin_img" => $pin,
+            "pin_img" => $pin['img'],
             "gyms" => $gyms
         );
 
@@ -60,12 +71,15 @@ class Gym
      * @param $id
      */
     public function get(Request $request, Application $app, $id) {
-        $sql = "select * from gym where id=?";
-        $gym = $app['db']->fetchAssoc($sql, array($id));
+        $queryBuilder = $app["db"]->createQueryBuilder();
+        $queryBuilder
+            ->select('g.id', 'g.name', 'g.address', 'g.lat', 'g.lon', 'g.logo', 'c.name as city')
+            ->from('gym', 'g')
+            ->join('g','cities', 'c', 'g.city=c.id')
+            ->where($queryBuilder->expr()->eq('g.id', $queryBuilder->createNamedParameter($id)));
 
-        $result = $gym;
 
-        return $app->json($result);
+        return $app->json($queryBuilder->execute()->fetch());
     }
 
     /**
